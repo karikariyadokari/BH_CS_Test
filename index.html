@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>バウンティハンターズ CS対応テンプレート管理</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f7f9; --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --fav: #f39c12; }
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; line-height: 1.6; color: #333; background-color: var(--bg); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: var(--primary); border-bottom: 3px solid var(--secondary); padding-bottom: 10px; margin-bottom: 5px; }
+        
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #f8f9fa; padding: 10px; border-radius: 6px; border: 1px solid #e9ecef; }
+        .status-bar { font-size: 0.9em; font-weight: bold; padding: 5px 10px; border-radius: 4px; }
+        .status-online { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .status-offline { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .user-info { font-size: 0.95em; color: #555; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .btn-small { background: #bdc3c7; color: #333; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em; transition: 0.2s; }
+        .btn-small:hover { background: #95a5a6; color: white; }
+
+        .header-actions { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .util-buttons { display: flex; gap: 10px; }
+        .btn-util { background: #95a5a6; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-size: 0.85em; transition: 0.2s; }
+        
+        .search-container { flex-grow: 1; min-width: 300px; display: flex; gap: 10px; align-items: center; }
+        .search-input { width: 100%; padding: 10px; border: 2px solid var(--secondary); border-radius: 6px; font-size: 1em; }
+        .fav-filter-label { font-weight: bold; color: var(--fav); cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+
+        .toc { background: #e8f4f8; padding: 15px 20px; border-radius: 6px; margin-bottom: 30px; border: 1px solid #d1e9f0; }
+        .toc h2 { margin-top: 0; font-size: 1.1em; color: var(--primary); border-bottom: 1px solid #b3d7e2; padding-bottom: 5px; }
+        .toc ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0 0; }
+        .toc li a { text-decoration: none; color: white; background: var(--secondary); padding: 6px 14px; border-radius: 20px; font-size: 0.85em; transition: 0.2s; display: inline-block; }
+        .toc li a:hover { background: var(--primary); transform: translateY(-2px); }
+
+        .category-section { margin-bottom: 40px; scroll-margin-top: 20px; position: relative; }
+        .category-header { background: var(--primary); color: white; padding: 10px 20px; margin: 0; font-size: 1.2em; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .cat-actions { display: flex; gap: 5px; }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { border: 1px solid #ddd; padding: 15px; vertical-align: top; }
+        th { background: #f8f9fa; width: 25%; color: #555; font-weight: bold; position: relative; font-size: 0.9em; }
+        
+        .template-box { background: #fafafa; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.95em; color: #444; margin-bottom: 10px; }
+        .edit-input, .edit-textarea { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
+        .edit-textarea { height: 200px; resize: vertical; }
+        
+        .tag-badge { background: #e0e0e0; color: #333; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; margin-right: 5px; margin-top: 5px; display: inline-block; }
+        .meta-info { margin-top: 10px; font-size: 0.75em; color: #7f8c8d; display: flex; justify-content: space-between; align-items: center; }
+        .edit-log { font-style: italic; }
+        .copy-count { font-weight: bold; background: #e8f4f8; padding: 2px 8px; border-radius: 10px; color: var(--secondary); }
+        
+        .btn { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em; font-weight: bold; transition: 0.2s; margin-right: 5px; margin-top: 5px; }
+        .btn-copy { background: var(--success); color: white; }
+        .btn-edit { background: var(--warning); color: #333; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn-save { background: var(--secondary); color: white; }
+        .btn-cancel { background: #bdc3c7; color: #333; }
+        .btn-fav { background: transparent; border: 1px solid var(--fav); color: var(--fav); position: absolute; top: 10px; right: 10px; font-size: 1.1em; border-radius: 50%; width: 28px; height: 28px; line-height: 26px; text-align: center; padding: 0; }
+        .btn-fav.active { background: var(--fav); color: white; }
+
+        .btn-add { background: #8e44ad; color: white; display: block; width: 100%; text-align: center; padding: 8px; border-radius: 0 0 6px 6px; }
+        .btn-add-cat { background: var(--primary); color: white; margin-top: 20px; padding: 12px; font-size: 1em; width: 100%; border-radius: 6px; cursor: pointer; border: none; }
+        
+        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }
+
+        #btn-back-to-top { position: fixed; bottom: 30px; right: 30px; display: none; background: var(--primary); color: white; border: none; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 999; padding: 0; font-size: 1.5em; align-items: center; justify-content: center; }
+        #btn-back-to-top:hover { background: var(--secondary); transform: scale(1.1); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🏹 バウンティハンターズ CS対応テンプレート管理</h1>
+    
+    <div class="header-top">
+        <div id="status-bar" class="status-bar status-offline">通信状態を確認中...</div>
+        <div class="user-info">
+            👤 <span id="display-username">未設定</span>
+            <button class="btn-small" onclick="changeEditorName()">名前を変更</button>
+        </div>
+    </div>
+    
+    <div class="header-actions">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 キーワード・タグで絞り込み..." oninput="render()">
+            <label class="fav-filter-label">
+                <input type="checkbox" id="favFilter" onchange="render()"> ★ お気に入り
+            </label>
+        </div>
+        <div class="util-buttons">
+            <input type="file" id="importFile" style="display:none;" accept=".json" onchange="handleFileSelect(event)">
+            <button class="btn-util" onclick="document.getElementById('importFile').click()">📂 読込</button>
+            <button class="btn-util" onclick="exportData()">💾 バックアップ</button>
+            <button class="btn-util" onclick="forceSync()" style="background-color: var(--secondary);">🔄 同期</button>
+        </div>
+    </div>
+
+    <div id="toc-container"></div>
+    <div id="app"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+<button id="btn-back-to-top" onclick="scrollToTop()">⬆️</button>
+
+<script>
+    // ==========================================
+    // 💡 設定：GASのURLをここに貼り付けてください
+    // ==========================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbywZ-VthMhqd258RmOfj987E4FgJu41cSNVnlOHxLChNYUxIp-5VNOCOePSL-Vyiyo-/exec"; 
+    
+    let appData = [];
+    let editingState = { catIndex: null, tplIndex: null };
+    let lastSyncTime = 0; 
+    const FAV_KEY = 'bh_cs_favorites'; 
+    const USER_KEY = 'bh_cs_username'; 
+
+    // --- 名前管理機能 ---
+    function initEditorName() {
+        let name = localStorage.getItem(USER_KEY);
+        if (!name) {
+            name = prompt("履歴に残すあなたの名前を入力してください。") || "担当者";
+            localStorage.setItem(USER_KEY, name);
+        }
+        document.getElementById('display-username').innerText = name;
+        return name;
+    }
+
+    function changeEditorName() {
+        let currentName = localStorage.getItem(USER_KEY) || "担当者";
+        let newName = prompt("新しい名前を入力してください:", currentName);
+        if (newName && newName.trim() !== "") {
+            localStorage.setItem(USER_KEY, newName.trim());
+            document.getElementById('display-username').innerText = newName.trim();
+            showToast('名前を変更しました');
+        }
+    }
+
+    function getFavorites() { return JSON.parse(localStorage.getItem(FAV_KEY) || "[]"); }
+
+    async function init() {
+        initEditorName();
+        const statusBar = document.getElementById('status-bar');
+        if (!API_URL.startsWith("https://script.google.com")) {
+            statusBar.innerText = "⚠️ オフラインモード";
+            render();
+            return;
+        }
+        try {
+            statusBar.innerText = "🔄 同期中...";
+            const response = await fetch(API_URL);
+            const resJson = await response.json();
+            if (resJson.json) {
+                appData = JSON.parse(resJson.json);
+                lastSyncTime = resJson.updatedAt;
+                statusBar.className = "status-bar status-online";
+                statusBar.innerText = "✅ サーバー同期済み";
+            }
+            render();
+        } catch (e) {
+            statusBar.innerText = "❌ 通信失敗";
+        }
+    }
+
+    // silent = true の場合はトースト通知を出さない（カウンター更新時などに使用）
+    async function saveData(force = false, silent = false) {
+        if (!API_URL.startsWith("https://script.google.com")) {
+            if(!silent) showToast('オフラインのため保存できません');
+            return;
+        }
+        const payload = { lastSyncTime: force ? 0 : lastSyncTime, data: appData };
+        try {
+            const response = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+            const result = await response.text();
+            if (result === "conflict") {
+                if(!silent) alert("⚠️ 競合しました。最新版を読み込みます。");
+                init(); 
+            } else {
+                lastSyncTime = parseInt(result);
+                if(!silent) showToast('保存・同期しました');
+                render();
+            }
+        } catch(e) { if(!silent) alert("通信エラー"); }
+    }
+
+    function render() {
+        const appDiv = document.getElementById('app');
+        const tocContainer = document.getElementById('toc-container');
+        appDiv.innerHTML = '';
+        tocContainer.innerHTML = '';
+
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const showOnlyFavs = document.getElementById('favFilter').checked;
+        const favorites = getFavorites();
+        const isFiltering = searchQuery !== "" || showOnlyFavs;
+        const visibleCatsForToc = [];
+
+        appData.forEach((cat, cIndex) => {
+            const filteredTemplates = cat.templates.filter(tpl => {
+                const isFav = favorites.includes(tpl.id);
+                if (showOnlyFavs && !isFav) return false;
+                const matchStr = (tpl.title + tpl.content + (tpl.tags || '')).toLowerCase();
+                return matchStr.includes(searchQuery);
+            });
+
+            if (isFiltering && filteredTemplates.length === 0 && editingState.catIndex !== cIndex) return;
+
+            visibleCatsForToc.push({ id: cat.id || `cat-${cIndex}`, title: cat.title });
+
+            const catSection = document.createElement('div');
+            catSection.className = 'category-section';
+            catSection.id = cat.id || `cat-${cIndex}`;
+            catSection.innerHTML = `
+                <h2 class="category-header">
+                    <span>${cat.title}</span>
+                    <div class="cat-actions">
+                        <button class="btn btn-edit" onclick="editCategory(${cIndex})" style="margin:0;">名前変更</button>
+                        <button class="btn btn-delete" onclick="deleteCategory(${cIndex})" style="margin:0;">カテゴリ削除</button>
+                    </div>
+                </h2>`;
+
+            const table = document.createElement('table');
+            const tbody = document.createElement('tbody');
+
+            cat.templates.forEach((tpl, tIndex) => {
+                if (isFiltering && !filteredTemplates.includes(tpl) && !(editingState.catIndex === cIndex && editingState.tplIndex === tIndex)) return;
+
+                const tr = document.createElement('tr');
+                const isEditing = (editingState.catIndex === cIndex && editingState.tplIndex === tIndex);
+                const isFav = favorites.includes(tpl.id);
+                const copyCount = tpl.copyCount || 0; // 追加：コピー回数
+
+                if (isEditing) {
+                    tr.innerHTML = `
+                        <th>
+                            <input type="text" id="edit-title-${cIndex}-${tIndex}" class="edit-input" value="${tpl.title}" placeholder="件名">
+                            <input type="text" id="edit-tags-${cIndex}-${tIndex}" class="edit-input" value="${tpl.tags || ''}" placeholder="タグ（,区切り）">
+                            <div style="font-size:0.8em; color:#888; margin-top:5px;">💡 変数挿入: {{変数名}}</div>
+                        </th>
+                        <td>
+                            <textarea id="edit-content-${cIndex}-${tIndex}" class="edit-textarea">${tpl.content}</textarea><br>
+                            <button class="btn btn-save" onclick="saveTemplate(${cIndex}, ${tIndex})">💾 保存</button>
+                            <button class="btn btn-cancel" onclick="cancelEdit()">❌ 中止</button>
+                        </td>`;
+                } else {
+                    const tagHtml = tpl.tags ? tpl.tags.split(',').map(tag => `<span class="tag-badge">🏷️ ${tag.trim()}</span>`).join('') : '';
+                    const logHtml = tpl.lastEditedBy ? `<span class="edit-log">最終更新: ${tpl.lastEditedAt} (${tpl.lastEditedBy})</span>` : '';
+                    tr.innerHTML = `
+                        <th>
+                            ${tpl.title.replace(/\n/g, '<br>')}
+                            <button class="btn-fav ${isFav ? 'active' : ''}" onclick="toggleFavorite('${tpl.id}')">★</button>
+                            <div class="tags-display">${tagHtml}</div>
+                        </th>
+                        <td>
+                            <div class="template-box">${tpl.content}</div>
+                            <button class="btn btn-copy" onclick="copyTextWithVariables(${cIndex}, ${tIndex})">📋 コピー</button>
+                            <button class="btn btn-edit" onclick="startEdit(${cIndex}, ${tIndex})">✏️ 編集</button>
+                            <button class="btn btn-delete" onclick="deleteTemplate(${cIndex}, ${tIndex})">🗑️ 削除</button>
+                            
+                            <div class="meta-info">
+                                <span class="copy-count">🔄 使用回数: ${copyCount}回</span>
+                                ${logHtml}
+                            </div>
+                        </td>`;
+                }
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            catSection.appendChild(table);
+            const addBtn = document.createElement('button');
+            addBtn.className = 'btn btn-add';
+            addBtn.innerHTML = `➕ 項目追加`;
+            addBtn.onclick = () => addNewTemplate(cIndex);
+            catSection.appendChild(addBtn);
+            appDiv.appendChild(catSection);
+        });
+
+        if (visibleCatsForToc.length > 0) {
+            const tocDiv = document.createElement('div');
+            tocDiv.className = 'toc';
+            tocDiv.innerHTML = `<h2>目次</h2>`;
+            const ul = document.createElement('ul');
+            visibleCatsForToc.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<a href="#${item.id}">${item.title}</a>`;
+                ul.appendChild(li);
+            });
+            tocDiv.appendChild(ul);
+            tocContainer.appendChild(tocDiv);
+        }
+
+        const addCatBtn = document.createElement('button');
+        addCatBtn.className = 'btn btn-add-cat';
+        addCatBtn.innerHTML = '📂 新しいカテゴリーを追加する';
+        addCatBtn.onclick = addNewCategory;
+        appDiv.appendChild(addCatBtn);
+    }
+
+    // --- 矢印中央揃え ---
+    window.onscroll = () => {
+        const btn = document.getElementById("btn-back-to-top");
+        btn.style.display = (window.scrollY > 300) ? "flex" : "none";
+    };
+    function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+    // --- 各種アクション ---
+
+    // 【新規】変数展開＆コピー機能
+    async function copyTextWithVariables(cIndex, tIndex) {
+        let text = appData[cIndex].templates[tIndex].content;
+        
+        // 正規表現で {{任意の文字}} を抽出
+        const matches = text.match(/\{\{(.*?)\}\}/g);
+        
+        if (matches) {
+            // 重複を削除して同じ変数を2回聞かないようにする
+            const uniqueVars = [...new Set(matches)];
+            
+            for (const match of uniqueVars) {
+                // {{ }} を取り除いた変数名（例：お客様名）
+                const varName = match.replace(/[{}]/g, '');
+                let val = prompt(`【変数入力】\n「${varName}」に入るテキストを入力してください:\n（キャンセルを押すとコピーを中止します）`, "");
+                
+                if (val === null) return; // キャンセルされたらコピー自体を中止
+                
+                // 該当するすべての変数を入力値に置換
+                text = text.split(match).join(val);
+            }
+        }
+
+        // クリップボードにコピー
+        navigator.clipboard.writeText(text).then(() => {
+            // カウンターを加算
+            appData[cIndex].templates[tIndex].copyCount = (appData[cIndex].templates[tIndex].copyCount || 0) + 1;
+            
+            showToast('コピーしました！');
+            
+            // サイレント（通知なし）でサーバーに保存して回数を同期
+            saveData(false, true); 
+        });
+    }
+
+    function toggleFavorite(id) {
+        let f = getFavorites();
+        f = f.includes(id) ? f.filter(x => x !== id) : [...f, id];
+        localStorage.setItem(FAV_KEY, JSON.stringify(f));
+        render();
+    }
+    
+    function startEdit(c, t) { editingState = { catIndex: c, tplIndex: t }; render(); }
+    function cancelEdit() { editingState = { catIndex: null, tplIndex: null }; render(); }
+    
+    function saveTemplate(c, t) {
+        const now = new Date();
+        const ts = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')}`;
+        appData[c].templates[t].title = document.getElementById(`edit-title-${c}-${t}`).value;
+        appData[c].templates[t].tags = document.getElementById(`edit-tags-${c}-${t}`).value;
+        appData[c].templates[t].content = document.getElementById(`edit-content-${c}-${t}`).value;
+        appData[c].templates[t].lastEditedBy = localStorage.getItem(USER_KEY) || "担当者";
+        appData[c].templates[t].lastEditedAt = ts;
+        editingState = { catIndex: null, tplIndex: null };
+        saveData();
+    }
+
+    function deleteTemplate(c, t) { if(confirm('項目を削除しますか？')) { appData[c].templates.splice(t, 1); saveData(); } }
+    
+    function addNewTemplate(c) {
+        appData[c].templates.push({ id: 't_'+Date.now(), title: '', tags: '', content: '', copyCount: 0 });
+        startEdit(c, appData[c].templates.length - 1);
+    }
+    
+    function editCategory(c) {
+        const n = prompt('新カテゴリ名', appData[c].title);
+        if (n) { appData[c].title = n; saveData(); }
+    }
+    
+    function deleteCategory(cIndex) {
+        if (confirm(`⚠️ カテゴリ「${appData[cIndex].title}」を丸ごと削除しますか？`)) {
+            appData.splice(cIndex, 1);
+            saveData();
+        }
+    }
+    
+    function addNewCategory() {
+        const n = prompt('新しいカテゴリー名');
+        if (n && n.trim()) {
+            appData.push({ id: 'cat_'+Date.now(), title: n.trim(), templates: [] });
+            addNewTemplate(appData.length - 1);
+            saveData();
+        }
+    }
+    
+    function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.opacity = 1; setTimeout(() => t.style.opacity = 0, 2000); }
+    function forceSync() { init(); showToast('最新状態に更新しました'); }
+    function exportData() {
+        const blob = new Blob([JSON.stringify(appData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = "backup.json"; a.click();
+    }
+    function handleFileSelect(e) {
+        const r = new FileReader();
+        r.onload = (ev) => { try { appData = JSON.parse(ev.target.result); saveData(true); } catch(e){ alert("エラー"); } };
+        r.readAsText(e.target.files[0]);
+    }
+    window.onload = init;
+</script>
+</body>
+</html>
