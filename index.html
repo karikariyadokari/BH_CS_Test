@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-
     <meta name="BH" content="noindex,nofollow">
     <meta charset="UTF-8">
     <title>バウンティハンターズ CS対応テンプレート管理</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --bg: #f4f7f9; --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --fav: #f39c12; }
         body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif; line-height: 1.6; color: #333; background-color: var(--bg); margin: 0; padding: 20px; }
@@ -35,17 +35,22 @@
         .toc li a:hover { background: var(--primary); transform: translateY(-2px); }
 
         .category-section { margin-bottom: 40px; scroll-margin-top: 20px; position: relative; }
-        .category-header { background: var(--primary); color: white; padding: 10px 20px; margin: 0; font-size: 1.2em; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .category-header { background: var(--primary); color: white; padding: 10px 20px; margin: 0; font-size: 1.2em; border-radius: 6px 6px 0 0; display: flex; justify-content: space-between; align-items: center; cursor: grab; } /* cursor追加 */
+        .category-header:active { cursor: grabbing; }
         .cat-actions { display: flex; gap: 5px; }
 
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { border: 1px solid #ddd; padding: 15px; vertical-align: top; }
-        th { background: #f8f9fa; width: 25%; color: #555; font-weight: bold; position: relative; font-size: 0.9em; }
+        th { background: #f8f9fa; width: 25%; color: #555; font-weight: bold; position: relative; font-size: 0.9em; cursor: grab; } /* cursor追加 */
         
         .template-box { background: #fafafa; border: 1px solid #e0e0e0; padding: 15px; border-radius: 4px; white-space: pre-wrap; font-size: 0.95em; color: #444; margin-bottom: 10px; }
         .edit-input, .edit-textarea { width: 100%; padding: 8px; margin-bottom: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; }
         .edit-textarea { height: 200px; resize: vertical; }
         
+        /* ドラッグ中のスタイル */
+        .sortable-ghost { opacity: 0.4; background-color: var(--secondary) !important; }
+        .sortable-chosen { background-color: #f0f0f0; }
+
         .tag-badge { background: #e0e0e0; color: #333; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; margin-right: 5px; margin-top: 5px; display: inline-block; }
         .meta-info { margin-top: 10px; font-size: 0.75em; color: #7f8c8d; display: flex; justify-content: space-between; align-items: center; }
         .edit-log { font-style: italic; }
@@ -57,12 +62,12 @@
         .btn-delete { background: var(--danger); color: white; }
         .btn-save { background: var(--secondary); color: white; }
         .btn-cancel { background: #bdc3c7; color: #333; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; } /* 無効化ボタンのスタイル */
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
         
-        .btn-fav { background: transparent; border: 1px solid var(--fav); color: var(--fav); position: absolute; top: 10px; right: 10px; font-size: 1.1em; border-radius: 50%; width: 28px; height: 28px; line-height: 26px; text-align: center; padding: 0; }
+        .btn-fav { background: transparent; border: 1px solid var(--fav); color: var(--fav); position: absolute; top: 10px; right: 10px; font-size: 1.1em; border-radius: 50%; width: 28px; height: 28px; line-height: 26px; text-align: center; padding: 0; cursor: pointer; }
         .btn-fav.active { background: var(--fav); color: white; }
 
-        .btn-add { background: #8e44ad; color: white; display: block; width: 100%; text-align: center; padding: 8px; border-radius: 0 0 6px 6px; }
+        .btn-add { background: #8e44ad; color: white; display: block; width: 100%; text-align: center; padding: 8px; border-radius: 0 0 6px 6px; cursor: pointer; }
         .btn-add-cat { background: var(--primary); color: white; margin-top: 20px; padding: 12px; font-size: 1em; width: 100%; border-radius: 6px; cursor: pointer; border: none; }
         
         .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: white; padding: 10px 20px; border-radius: 4px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 1000; }
@@ -111,9 +116,6 @@
 <button id="btn-back-to-top" onclick="scrollToTop()">⬆️</button>
 
 <script>
-    // ==========================================
-    // 💡 設定：GASのURLをここに貼り付けてください
-    // ==========================================
     const API_URL = "https://script.google.com/macros/s/AKfycbywZ-VthMhqd258RmOfj987E4FgJu41cSNVnlOHxLChNYUxIp-5VNOCOePSL-Vyiyo-/exec"; 
     
     let appData = [];
@@ -215,21 +217,12 @@
             const catSection = document.createElement('div');
             catSection.className = 'category-section';
             catSection.id = cat.id || `cat-${cIndex}`;
-            
-            // カテゴリの並び替えボタン（検索中は非表示）
-            let catSortHtml = '';
-            if (!isFiltering) {
-                catSortHtml = `
-                    <button class="btn" style="background:rgba(255,255,255,0.2); color:white; margin:0;" onclick="moveCategoryUp(${cIndex})" ${cIndex === 0 ? 'disabled' : ''} title="カテゴリを上へ">⬆️</button>
-                    <button class="btn" style="background:rgba(255,255,255,0.2); color:white; margin:0;" onclick="moveCategoryDown(${cIndex})" ${cIndex === appData.length - 1 ? 'disabled' : ''} title="カテゴリを下へ">⬇️</button>
-                `;
-            }
+            catSection.dataset.index = cIndex; // 並び替え用
 
             catSection.innerHTML = `
                 <h2 class="category-header">
                     <span>${cat.title}</span>
                     <div class="cat-actions">
-                        ${catSortHtml}
                         <button class="btn btn-edit" onclick="editCategory(${cIndex})" style="margin:0;">名前変更</button>
                         <button class="btn btn-delete" onclick="deleteCategory(${cIndex})" style="margin:0;">カテゴリ削除</button>
                     </div>
@@ -237,11 +230,13 @@
 
             const table = document.createElement('table');
             const tbody = document.createElement('tbody');
+            tbody.dataset.catIndex = cIndex; // 並び替え用
 
             cat.templates.forEach((tpl, tIndex) => {
                 if (isFiltering && !filteredTemplates.includes(tpl) && !(editingState.catIndex === cIndex && editingState.tplIndex === tIndex)) return;
 
                 const tr = document.createElement('tr');
+                tr.dataset.index = tIndex; // 並び替え用
                 const isEditing = (editingState.catIndex === cIndex && editingState.tplIndex === tIndex);
                 const isFav = favorites.includes(tpl.id);
                 const copyCount = tpl.copyCount || 0;
@@ -251,7 +246,6 @@
                         <th>
                             <input type="text" id="edit-title-${cIndex}-${tIndex}" class="edit-input" value="${tpl.title}" placeholder="件名">
                             <input type="text" id="edit-tags-${cIndex}-${tIndex}" class="edit-input" value="${tpl.tags || ''}" placeholder="タグ（,区切り）">
-                            <div style="font-size:0.8em; color:#888; margin-top:5px;">💡 変数挿入: {{変数名}}</div>
                         </th>
                         <td>
                             <textarea id="edit-content-${cIndex}-${tIndex}" class="edit-textarea">${tpl.content}</textarea><br>
@@ -262,17 +256,6 @@
                     const tagHtml = tpl.tags ? tpl.tags.split(',').map(tag => `<span class="tag-badge">🏷️ ${tag.trim()}</span>`).join('') : '';
                     const logHtml = tpl.lastEditedBy ? `<span class="edit-log">最終更新: ${tpl.lastEditedAt} (${tpl.lastEditedBy})</span>` : '';
                     
-                    // テンプレートの並び替えボタン（検索中は非表示）
-                    let tplSortHtml = '';
-                    if (!isFiltering) {
-                        tplSortHtml = `
-                            <span style="margin-left: 10px; border-left: 1px solid #ccc; padding-left: 10px;">
-                                <button class="btn" style="background: #ecf0f1; color: #333;" onclick="moveTemplateUp(${cIndex}, ${tIndex})" ${tIndex === 0 ? 'disabled' : ''} title="上へ移動">⬆️</button>
-                                <button class="btn" style="background: #ecf0f1; color: #333;" onclick="moveTemplateDown(${cIndex}, ${tIndex})" ${tIndex === cat.templates.length - 1 ? 'disabled' : ''} title="下へ移動">⬇️</button>
-                            </span>
-                        `;
-                    }
-
                     tr.innerHTML = `
                         <th>
                             ${tpl.title.replace(/\n/g, '<br>')}
@@ -284,7 +267,6 @@
                             <button class="btn btn-copy" onclick="copyTextWithVariables(${cIndex}, ${tIndex})">📋 コピー</button>
                             <button class="btn btn-edit" onclick="startEdit(${cIndex}, ${tIndex})">✏️ 編集</button>
                             <button class="btn btn-delete" onclick="deleteTemplate(${cIndex}, ${tIndex})">🗑️ 削除</button>
-                            ${tplSortHtml}
                             
                             <div class="meta-info">
                                 <span class="copy-count">🔄 使用回数: ${copyCount}回</span>
@@ -297,7 +279,6 @@
             table.appendChild(tbody);
             catSection.appendChild(table);
             
-            // 検索・フィルタ中でなければ「項目追加」ボタンを表示
             if (!isFiltering) {
                 const addBtn = document.createElement('button');
                 addBtn.className = 'btn btn-add';
@@ -308,6 +289,7 @@
             appDiv.appendChild(catSection);
         });
 
+        // 目次描画
         if (visibleCatsForToc.length > 0) {
             const tocDiv = document.createElement('div');
             tocDiv.className = 'toc';
@@ -328,17 +310,55 @@
             addCatBtn.innerHTML = '📂 新しいカテゴリーを追加する';
             addCatBtn.onclick = addNewCategory;
             appDiv.appendChild(addCatBtn);
+            
+            // 並び替えの初期化
+            initSortable();
         }
     }
 
-    // --- 矢印中央揃え ---
+    // --- SortableJS 初期化 ---
+    function initSortable() {
+        const appDiv = document.getElementById('app');
+
+        // カテゴリーの並び替え
+        new Sortable(appDiv, {
+            animation: 150,
+            handle: '.category-header',
+            draggable: '.category-section',
+            ghostClass: 'sortable-ghost',
+            onEnd: function (evt) {
+                if (evt.oldIndex === evt.newIndex) return;
+                const item = appData.splice(evt.oldIndex, 1)[0];
+                appData.splice(evt.newIndex, 0, item);
+                saveData(); // 並び替え後に保存
+            }
+        });
+
+        // 各カテゴリー内のテンプレート並び替え
+        const tbodies = document.querySelectorAll('tbody');
+        tbodies.forEach(tbody => {
+            new Sortable(tbody, {
+                animation: 150,
+                handle: 'th',
+                draggable: 'tr',
+                ghostClass: 'sortable-ghost',
+                onEnd: function (evt) {
+                    if (evt.oldIndex === evt.newIndex) return;
+                    const cIdx = parseInt(evt.from.dataset.catIndex);
+                    const item = appData[cIdx].templates.splice(evt.oldIndex, 1)[0];
+                    appData[cIdx].templates.splice(evt.newIndex, 0, item);
+                    saveData(); // 並び替え後に保存
+                }
+            });
+        });
+    }
+
+    // --- スクロール・各種アクション ---
     window.onscroll = () => {
         const btn = document.getElementById("btn-back-to-top");
         btn.style.display = (window.scrollY > 300) ? "flex" : "none";
     };
     function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-    // --- 各種アクション ---
 
     async function copyTextWithVariables(cIndex, tIndex) {
         let text = appData[cIndex].templates[tIndex].content;
@@ -366,41 +386,6 @@
         render();
     }
     
-    // --- 並び替え機能 (Up/Down) ---
-    function moveTemplateUp(cIndex, tIndex) {
-        if (tIndex === 0) return;
-        const temp = appData[cIndex].templates[tIndex];
-        appData[cIndex].templates[tIndex] = appData[cIndex].templates[tIndex - 1];
-        appData[cIndex].templates[tIndex - 1] = temp;
-        saveData();
-    }
-
-    function moveTemplateDown(cIndex, tIndex) {
-        if (tIndex === appData[cIndex].templates.length - 1) return;
-        const temp = appData[cIndex].templates[tIndex];
-        appData[cIndex].templates[tIndex] = appData[cIndex].templates[tIndex + 1];
-        appData[cIndex].templates[tIndex + 1] = temp;
-        saveData();
-    }
-
-    function moveCategoryUp(cIndex) {
-        if (cIndex === 0) return;
-        const temp = appData[cIndex];
-        appData[cIndex] = appData[cIndex - 1];
-        appData[cIndex - 1] = temp;
-        saveData();
-    }
-
-    function moveCategoryDown(cIndex) {
-        if (cIndex === appData.length - 1) return;
-        const temp = appData[cIndex];
-        appData[cIndex] = appData[cIndex + 1];
-        appData[cIndex + 1] = temp;
-        saveData();
-    }
-
-    // ----------------------------
-
     function startEdit(c, t) { editingState = { catIndex: c, tplIndex: t }; render(); }
     function cancelEdit() { editingState = { catIndex: null, tplIndex: null }; render(); }
     
