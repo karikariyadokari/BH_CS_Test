@@ -184,7 +184,8 @@
     
     <div class="header-actions">
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="🔍 キーワード・タグで絞り込み..." oninput="render()">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 お客様の問い合わせ文をコピペ、またはキーワード入力..." oninput="render()">
+            <button class="btn" style="background:#8e44ad; color:white; white-space: nowrap; padding: 10px;" onclick="aiSearch()" id="btn-ai-search">✨ AIで該当テンプレを探す</button>
             <label class="fav-filter-label">
                 <input type="checkbox" id="favFilter" onchange="render()"> ★ お気に入り
             </label>
@@ -206,7 +207,7 @@
 <button id="btn-back-to-top" onclick="scrollToTop()">⬆️</button>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbywZ-VthMhqd258RmOfj987E4FgJu41cSNVnlOHxLChNYUxIp-5VNOCOePSL-Vyiyo-/exec"; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbzLFUb6yWtg9dmUfCkp0R2CUlSM7ry4HE_cSucRZlMgy2QNUP2D-3XzeFxrddvy8bDh5Q/exec"; 
     
     let appData = [];
     let editingState = { catIndex: null, tplIndex: null };
@@ -328,13 +329,19 @@
         const isFiltering = searchQuery !== "" || showOnlyFavs;
         const visibleCatsForToc = [];
 
+        // render() の中の filteredTemplates 作成部分を以下に差し替え
+        const searchTerms = searchQuery.split(/\s+/).filter(t => t); // スペースで分割
+
         appData.forEach((cat, cIndex) => {
             const filteredTemplates = cat.templates.filter(tpl => {
                 const isFav = favorites.includes(tpl.id);
                 if (showOnlyFavs && !isFav) return false;
-                const matchStr = (tpl.title + tpl.content + (tpl.tags || '')).toLowerCase();
-                return matchStr.includes(searchQuery);
+                
+                const matchStr = (tpl.title + " " + tpl.content + " " + (tpl.tags || '')).toLowerCase();
+                // 複数の検索キーワードが「すべて」含まれているか判定（AND検索）
+                return searchTerms.every(term => matchStr.includes(term));
             });
+            // ... 以降は既存のまま
 
             if (isFiltering && filteredTemplates.length === 0 && editingState.catIndex !== cIndex) return;
 
@@ -369,7 +376,10 @@
                     tr.innerHTML = `
                         <th>
                             <input type="text" id="edit-title-${cIndex}-${tIndex}" class="edit-input" value="${tpl.title}" placeholder="件名">
-                            <input type="text" id="edit-tags-${cIndex}-${tIndex}" class="edit-input" value="${tpl.tags || ''}" placeholder="タグ（,区切り）">
+                            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                                <input type="text" id="edit-tags-${cIndex}-${tIndex}" class="edit-input" value="${tpl.tags || ''}" placeholder="タグ（,区切り）" style="margin-bottom:0;">
+                                <button class="btn" style="background:#8e44ad; color:white; margin:0;" onclick="autoTag(${cIndex}, ${tIndex})" id="btn-auto-tag-${cIndex}-${tIndex}">🏷️ AI自動作成</button>
+                            </div>
                         </th>
                         <td>
                             <textarea id="edit-content-${cIndex}-${tIndex}" class="edit-textarea">${tpl.content}</textarea><br>
@@ -613,6 +623,95 @@
         setTimeout(() => {
             element.classList.remove('active');
         }, 3500);
+    }
+
+    async function aiSearch() {
+        // 検索入力欄を取得
+        const queryInput = document.getElementById('searchInput'); 
+        const query = queryInput.value;
+        
+        if (!query) {
+            alert("問い合わせ内容を入力してください。");
+            return;
+        }
+
+        // ボタンを無効化してローディング中であることを示す
+        const btn = document.getElementById('btn-ai-search');
+        const originalText = btn.innerText;
+        btn.innerText = "✨ AIが思考中...";
+        btn.disabled = true;
+
+        try {
+            // 🌟【修正ポイント1】 appData を使って軽量化リストを作成
+            // カテゴリの中にテンプレートが入っている構造なので、flat()で平坦化します
+            const allTemplates = appData.flatMap(cat => cat.templates);
+            const lightweightTemplates = allTemplates.map(t => ({
+                title: t.title
+            }));
+
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: "findBestTemplate",
+                    text: query,
+                    templates: lightweightTemplates
+                })
+            });
+
+            const result = await response.json();
+            const bestTitle = result.result.trim();
+
+            if (!bestTitle || bestTitle === "なし") {
+                alert("AI: 該当するテンプレートが見つかりませんでした。キーワードを変えてお試しください。");
+            } else {
+                // 🌟 見つかったタイトルを検索窓にセット
+                document.getElementById('searchInput').value = bestTitle;
+                
+                // 🌟【修正ポイント2】 あなたのコードにある描画関数 render() を呼び出す
+                render();
+
+                alert(`AIが「${bestTitle}」を推奨しています。`);
+            }
+        } catch (e) {
+            console.error("Error:", e);
+            alert("通信エラーが発生しました。GAS側のデプロイが最新か確認してください。");
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    // 本文から自動でタグを生成する
+    async function autoTag(cIndex, tIndex) {
+        const content = document.getElementById(`edit-content-${cIndex}-${tIndex}`).value;
+        if (!content.trim()) {
+            alert("先にテンプレートの本文を入力してください。本文を元にタグを生成します。");
+            return;
+        }
+
+        const btn = document.getElementById(`btn-auto-tag-${cIndex}-${tIndex}`);
+        const originalText = btn.innerText;
+        btn.innerText = "⏳";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "generateTags", text: content })
+            });
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
+            // タグの入力欄に結果を反映
+            document.getElementById(`edit-tags-${cIndex}-${tIndex}`).value = data.result;
+            showToast("✨ AIがタグを生成しました");
+        } catch (e) {
+            console.error(e);
+            alert("通信エラー: " + e.message);
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
     }
     window.onload = init;
 </script>
