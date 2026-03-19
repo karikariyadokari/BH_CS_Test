@@ -53,6 +53,7 @@
                 <ul class="space-y-3 text-sm">
                     <li><a href="#intro" class="text-gray-600 hover:text-[#3498db] transition-colors block">1. はじめに (初期設定)</a></li>
                     <li><a href="#basic-usage" class="text-gray-600 hover:text-[#3498db] transition-colors block">2. 基本的な使い方</a></li>
+                    <li><a href="#ai-features" class="text-gray-600 hover:text-[#3498db] transition-colors block ml-4 text-blue-600 font-bold">新機能：AIによる業務支援</a></li>
                     <li><a href="#variable" class="text-gray-600 hover:text-[#3498db] transition-colors block ml-4">便利な機能：変数の展開</a></li>
                     <li><a href="#manage-template" class="text-gray-600 hover:text-[#3498db] transition-colors block">3. テンプレートの管理</a></li>
                     <li><a href="#manage-category" class="text-gray-600 hover:text-[#3498db] transition-colors block">4. カテゴリーの管理</a></li>
@@ -83,7 +84,7 @@
                     <div class="feature-box border border-gray-200 p-5 rounded-lg">
                         <div class="text-3xl mb-3">🔍</div>
                         <h3 class="font-bold text-lg mb-2">テンプレートを探す</h3>
-                        <p class="text-sm text-gray-600">画面上部の検索バーにキーワードを入力すると、タイトルや本文、タグから瞬時に絞り込みが行われます。</p>
+                        <p class="text-sm text-gray-600">検索バーにキーワードを入力します。<strong>スペース区切りで複数の単語（AND検索）</strong>を入力して絞り込むことも可能です。</p>
                     </div>
                     <div class="feature-box border border-gray-200 p-5 rounded-lg">
                         <div class="text-3xl mb-3">📋</div>
@@ -93,12 +94,26 @@
                     <div class="feature-box border border-gray-200 p-5 rounded-lg">
                         <div class="text-3xl mb-3">⭐</div>
                         <h3 class="font-bold text-lg mb-2">お気に入り機能</h3>
-                        <p class="text-sm text-gray-600">タイトルの横にある「★」マークをクリックするとお気に入り登録されます。上部の「★ お気に入り」にチェックを入れると、登録したものだけを表示できます。</p>
+                        <p class="text-sm text-gray-600">タイトルの横の「★」で登録できます。「★ お気に入り」にチェックを入れると登録したものだけを表示します。</p>
                     </div>
                     <div class="feature-box border border-gray-200 p-5 rounded-lg">
                         <div class="text-3xl mb-3">🔄</div>
                         <h3 class="font-bold text-lg mb-2">使用回数の確認</h3>
-                        <p class="text-sm text-gray-600">各テンプレートが「何回コピーされたか」が記録・表示されます。よく使われているテンプレートが一目でわかります。</p>
+                        <p class="text-sm text-gray-600">各テンプレートが「何回コピーされたか」が記録されます。頻出テンプレートの把握に役立ちます。</p>
+                    </div>
+                </div>
+
+                <div id="ai-features" class="bg-purple-50 border-l-4 border-purple-400 p-5 rounded-r-md mb-8">
+                    <h3 class="font-bold text-purple-800 text-lg mb-2">✨ AIによる業務支援機能</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <strong class="text-sm block text-purple-900">1. AIテンプレート検索</strong>
+                            <p class="text-sm text-gray-700">お客様からの問い合わせ内容をそのまま検索窓に貼り付け、<code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">✨ AIで該当テンプレを探す</code> ボタンを押してください。AIが内容を解析し、最適な回答を提案します。</p>
+                        </div>
+                        <div>
+                            <strong class="text-sm block text-purple-900">2. AI自動タグ生成</strong>
+                            <p class="text-sm text-gray-700">編集画面で本文を入力後、<code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">🏷️ AI自動作成</code> ボタンを押すと、AIが本文から適切な検索用タグを自動で抽出・入力します。</p>
+                        </div>
                     </div>
                 </div>
 
@@ -108,7 +123,7 @@
                     <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 ml-2">
                         <li>ポップアップに入力した内容が、テキスト内の該当箇所に自動で置き換わってからコピーされます。</li>
                         <li>例：<code class="text-gray-500">お世話になっております。{{お客様名}}様。</code> → ポップアップで「山田」と入力 → <code class="text-gray-800 font-bold">お世話になっております。山田様。</code> としてコピー完了！</li>
-                        <li>同じ変数名（例: <code class="bg-white px-1 py-0.5 rounded text-xs border border-gray-300">{{日時}}</code> が2箇所ある）場合、1回の入力で全て一括で置き換わります。</li>
+                        <li>同じ変数名が複数箇所ある場合、1回の入力ですべて一括で置き換わります。</li>
                     </ul>
                 </div>
             </section>
@@ -126,8 +141,8 @@
                         </p>
                         <ul class="list-disc list-inside text-sm text-gray-600 space-y-1 ml-2">
                             <li><strong>件名：</strong> テンプレートのタイトルです。</li>
-                            <li><strong>タグ：</strong> カンマ（,）区切りで入力すると、検索時にヒットしやすくなります。（例: <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">返品, 返金, クレーム</code>）</li>
-                            <li><strong>本文：</strong> 実際のテキストです。ここで前述の <code class="bg-gray-100 px-1 py-0.5 rounded text-xs">{{変数}}</code> も設定できます。</li>
+                            <li><strong>タグ：</strong> カンマ（,）区切りで入力します。AI自動生成ボタンで作成も可能です。</li>
+                            <li><strong>本文：</strong> 実際のテキストです。<code class="bg-gray-100 px-1 py-0.5 rounded text-xs">{{変数}}</code> もここで設定します。</li>
                         </ul>
                         <p class="text-gray-700 text-sm mt-2">編集後、<code class="bg-[#3498db] text-white px-2 py-0.5 rounded text-xs">💾 保存</code> を押すとサーバーに即座に同期されます。</p>
                     </div>
@@ -137,7 +152,7 @@
                             <span class="text-xl">↕️</span> 項目の並び替え
                         </h3>
                         <p class="text-gray-700 text-sm leading-relaxed">
-                            各テンプレートの<strong>左側にある件名部分（グレーの背景部分）</strong>をマウスで掴んでドラッグ＆ドロップすることで、カテゴリー内でのテンプレートの表示順を自由に変更できます。
+                            各テンプレートの<strong>左側にある件名部分（グレーの背景部分）</strong>をドラッグ＆ドロップすることで、カテゴリー内での表示順を自由に変更できます。
                         </p>
                     </div>
 
@@ -146,8 +161,7 @@
                             <span class="text-xl">➕</span> テンプレートの追加 / 削除
                         </h3>
                         <p class="text-gray-700 text-sm">
-                            各カテゴリーの一番下にある <code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">➕ 項目追加</code> ボタンを押すと、そのカテゴリーに新しい空のテンプレートが作成されます。<br>
-                            不要になったテンプレートは <code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">🗑️ 削除</code> ボタンで消去できます。
+                            カテゴリー下部の <code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">➕ 項目追加</code> ボタンで新規作成、<code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">🗑️ 削除</code> ボタンで消去できます。
                         </p>
                     </div>
                 </div>
@@ -162,7 +176,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                         <div class="bg-gray-50 p-4 border rounded">
                             <strong class="block text-[#2c3e50] mb-1">カテゴリーの追加</strong>
-                            <p class="text-gray-600">画面の一番下にある <code class="bg-[#2c3e50] text-white px-2 py-0.5 rounded text-xs">📂 新しいカテゴリーを追加する</code> ボタンをクリックします。</p>
+                            <p class="text-gray-600">画面最下部の <code class="bg-[#2c3e50] text-white px-2 py-0.5 rounded text-xs">📂 新しいカテゴリーを追加する</code> ボタンをクリックします。</p>
                         </div>
                         <div class="bg-gray-50 p-4 border rounded">
                             <strong class="block text-[#2c3e50] mb-1">カテゴリー名の変更</strong>
@@ -170,18 +184,18 @@
                         </div>
                         <div class="bg-gray-50 p-4 border rounded">
                             <strong class="block text-[#2c3e50] mb-1 text-blue-600">カテゴリーの並び替え</strong>
-                            <p class="text-gray-600">画面上部にある<strong>「目次」の各項目</strong>をマウスで掴んでドラッグ＆ドロップすることで、カテゴリー自体の並び順を変更できます。</p>
+                            <p class="text-gray-600">画面上部にある<strong>「目次」の各項目</strong>をドラッグ＆ドロップすることで、カテゴリー自体の表示順を変更できます。</p>
                         </div>
                         <div class="bg-red-50 p-4 border border-red-100 rounded">
                             <strong class="block text-red-600 mb-1">⚠️ カテゴリーの削除</strong>
-                            <p class="text-gray-600"><code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">カテゴリ削除</code> ボタンを押すと、<strong>中身ごと全て削除されます。</strong>誤操作に十分ご注意ください。</p>
+                            <p class="text-gray-600"><code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">カテゴリ削除</code> ボタンを押すと、<strong>中身ごとすべて削除されます。</strong>ご注意ください。</p>
                         </div>
                     </div>
 
                     <div class="bg-gray-100 p-4 rounded mt-4">
                         <h4 class="font-bold text-gray-800 mb-1">💡 並び替えができないときは？</h4>
                         <p class="text-xs text-gray-600 italic">
-                            「キーワード検索中」や「お気に入り絞り込み中」は、表示順が本来のデータ順と異なるため、誤操作防止のためにドラッグ＆ドロップでの並び替えが無効になります。順番を変えたい場合は、検索バーを空にしてください。
+                            「キーワード検索中」や「お気に入り絞り込み中」は、データの整合性を守るため並び替えが無効になります。順番を変えたい場合は、検索バーを空にしてください。
                         </p>
                     </div>
                 </div>
@@ -195,17 +209,17 @@
                     
                     <div class="flex items-start gap-3">
                         <div class="bg-[#3498db] text-white px-3 py-1 rounded text-sm whitespace-nowrap">🔄 同期</div>
-                        <p class="text-sm">他の人が追加・編集した最新のデータをサーバーから強制的に読み込み、画面を更新します。データが競合した（自分と他の人が同時に編集した）場合は警告が出ます。</p>
+                        <p class="text-sm">他者が更新した最新データをサーバーから強制的に読み込みます。データが競合した（同時に編集した）場合は警告が表示されます。</p>
                     </div>
 
                     <div class="flex items-start gap-3">
                         <div class="bg-[#95a5a6] text-white px-3 py-1 rounded text-sm whitespace-nowrap">💾 バックアップ</div>
-                        <p class="text-sm">現在のすべてのテンプレートデータを「backup.json」というファイルとしてお使いのパソコンにダウンロード（保存）します。定期的なバックアップを推奨します。</p>
+                        <p class="text-sm">現在の全テンプレートデータを「backup.json」としてPCに保存します。定期的なバックアップを推奨します。</p>
                     </div>
 
                     <div class="flex items-start gap-3">
                         <div class="bg-[#95a5a6] text-white px-3 py-1 rounded text-sm whitespace-nowrap">📂 読込</div>
-                        <p class="text-sm">バックアップした「.json」ファイルを読み込み、データを復元します。<strong>※読み込んだデータでサーバー上のデータが上書きされます。</strong></p>
+                        <p class="text-sm">バックアップした「.json」ファイルを読み込みます。<strong>※読み込んだデータでサーバー上のデータが完全に上書きされます。</strong></p>
                     </div>
 
                     <div class="mt-8 border-t pt-6">
@@ -213,8 +227,7 @@
                             <span class="text-xl">⬆️</span> トップへ戻るボタン
                         </h3>
                         <p class="text-sm leading-relaxed">
-                            画面を下にスクロールすると、画面の右下に<strong>上向きの矢印ボタン（トップへ戻る）</strong>が表示されます。<br>
-                            このボタンをクリックすると、ページの一番上までスムーズに自動スクロールします。
+                            画面を下にスクロールすると右下に表示される<strong>上向き矢印ボタン</strong>をクリックすると、ページ最上部までスムーズに戻ります。
                         </p>
                     </div>
                 </div>
