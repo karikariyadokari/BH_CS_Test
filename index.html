@@ -503,6 +503,22 @@
     };
     function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
+    // 日時文字列を日本表記（YYYY/MM/DD HH:MM）に変換する
+    function convertToJpDatetime(val) {
+        // 例: "02 Feb 2026 16:32:45" や "2 Feb 2026 16:32:45" など
+        const months = { Jan:1, Feb:2, Mar:3, Apr:4, May:5, Jun:6, Jul:7, Aug:8, Sep:9, Oct:10, Nov:11, Dec:12 };
+        const m = val.trim().match(/^(\d{1,2})\s+([A-Za-z]{3})\s+(\d{4})\s+(\d{1,2}):(\d{2})(?::\d{2})?$/);
+        if (m) {
+            const day   = String(m[1]).padStart(2, '0');
+            const mon   = String(months[m[2].charAt(0).toUpperCase() + m[2].slice(1).toLowerCase()] || '').padStart(2, '0');
+            const year  = m[3];
+            const hour  = String(m[4]).padStart(2, '0');
+            const min   = m[5];
+            if (mon) return `${year}/${mon}/${day} ${hour}:${min}`;
+        }
+        return null; // 日時形式でなければ null
+    }
+
     async function copyTextWithVariables(cIndex, tIndex) {
         let text = appData[cIndex].templates[tIndex].content;
         const matches = text.match(/\{\{(.*?)\}\}/g);
@@ -511,7 +527,10 @@
             for (const match of uniqueVars) {
                 const varName = match.replace(/[{}]/g, '');
                 let val = prompt(`【変数入力】\n「${varName}」に入るテキストを入力してください:\n（キャンセルを押すとコピーを中止します）`, "");
-                if (val === null) return; 
+                if (val === null) return;
+                // 日時形式の自動変換
+                const converted = convertToJpDatetime(val);
+                if (converted) val = converted;
                 text = text.split(match).join(val);
             }
         }
