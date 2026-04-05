@@ -1,247 +1,816 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <meta name="BH" content="noindex,nofollow">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>バウンティハンターズ CS対応テンプレート管理 マニュアル</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>マニュアル — Bounty Hunters CS</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #0f172a;
+            --bg2:      #1e293b;
+            --bg3:      #334155;
+            --border:   #334155;
+            --border2:  #475569;
+            --text:     #e2e8f0;
+            --muted:    #94a3b8;
+            --dim:      #64748b;
+            --primary:  #38bdf8;
+            --primary2: #0284c7;
+            --success:  #10b981;
+            --warn:     #f59e0b;
+            --danger:   #ef4444;
+            --purple:   #a78bfa;
+            --radius:   8px;
+            --radius-lg:12px;
+        }
+        [data-theme="light"] {
+            --bg:       #f1f5f9;
+            --bg2:      #ffffff;
+            --bg3:      #e2e8f0;
+            --border:   #e2e8f0;
+            --border2:  #cbd5e1;
+            --text:     #0f172a;
+            --muted:    #475569;
+            --dim:      #94a3b8;
+            --primary:  #0284c7;
+            --primary2: #0369a1;
+            --success:  #059669;
+            --warn:     #d97706;
+            --danger:   #dc2626;
+            --purple:   #7c3aed;
+        }
+
         body {
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
-            scroll-behavior: smooth;
+            font-family: 'DM Sans', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
+            transition: background 0.2s, color 0.2s;
         }
-        .section-title {
-            position: relative;
-            padding-left: 1rem;
+
+        /* ── LAYOUT ── */
+        .layout { display: flex; max-width: 1200px; margin: 0 auto; min-height: 100vh; }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            width: 240px; flex-shrink: 0;
+            position: sticky; top: 0; height: 100vh; overflow-y: auto;
+            background: var(--bg2); border-right: 1px solid var(--border);
+            padding: 24px 0 40px;
         }
-        .section-title::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 5px;
-            background-color: #3498db;
-            border-radius: 9999px;
+        .sidebar-logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 16px;
         }
-        .feature-box {
-            transition: transform 0.2s, box-shadow 0.2s;
+        .sidebar-logo .brand { font-family: 'Syne', sans-serif; font-size: 0.95rem; font-weight: 800; }
+        .sidebar-logo .brand span { color: var(--primary); }
+        .sidebar-logo .sub { font-size: 0.7rem; color: var(--dim); margin-top: 2px; }
+        .nav-section { padding: 0 12px; margin-bottom: 6px; }
+        .nav-section-title {
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--dim);
+            padding: 6px 8px 4px;
         }
-        .feature-box:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        .nav-link {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 10px; border-radius: var(--radius);
+            font-size: 0.82rem; font-weight: 600; color: var(--muted);
+            text-decoration: none; cursor: pointer;
+            transition: background 0.12s, color 0.12s;
         }
+        .nav-link:hover { background: var(--bg3); color: var(--text); }
+        .nav-link.active { background: rgba(56,189,248,0.12); color: var(--primary); }
+        .nav-icon { font-size: 0.9rem; width: 18px; text-align: center; flex-shrink: 0; }
+        .sidebar-back {
+            display: flex; align-items: center; gap: 6px;
+            padding: 7px 10px; border-radius: var(--radius);
+            font-size: 0.82rem; font-weight: 600; color: var(--muted);
+            text-decoration: none; margin: 0 12px 20px;
+            border: 1px solid var(--border2);
+            transition: background 0.12s, color 0.12s;
+        }
+        .sidebar-back:hover { background: var(--bg3); color: var(--text); }
+
+        /* ── MAIN CONTENT ── */
+        .main { flex: 1; padding: 40px 48px 80px; min-width: 0; }
+
+        /* ── PAGE HEADER ── */
+        .page-header { margin-bottom: 40px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+        .page-header h1 { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; }
+        .page-header h1 span { color: var(--primary); }
+        .page-header p { color: var(--muted); margin-top: 8px; font-size: 0.92rem; }
+
+        /* ── SECTIONS ── */
+        .section { margin-bottom: 56px; scroll-margin-top: 24px; }
+        .section-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 20px; padding-bottom: 12px;
+            border-bottom: 2px solid var(--border);
+        }
+        .section-icon { font-size: 1.4rem; }
+        .section-title { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800; }
+        .section-badge {
+            font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+            border-radius: 10px; letter-spacing: 0.04em; text-transform: uppercase;
+        }
+        .badge-basic  { background: rgba(16,185,129,0.12); color: var(--success); border: 1px solid rgba(16,185,129,0.3); }
+        .badge-ai     { background: rgba(139,92,246,0.12); color: var(--purple);  border: 1px solid rgba(139,92,246,0.3); }
+        .badge-admin  { background: rgba(245,158,11,0.12); color: var(--warn);    border: 1px solid rgba(245,158,11,0.3); }
+
+        /* ── CARDS ── */
+        .card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 24px; margin-bottom: 16px; }
+        .card-title { font-weight: 700; font-size: 0.92rem; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .card p, .card li { font-size: 0.88rem; color: var(--muted); line-height: 1.8; }
+        .card ul, .card ol { padding-left: 1.4em; }
+        .card li { margin-bottom: 4px; }
+
+        /* ── STEP LIST ── */
+        .steps { display: flex; flex-direction: column; gap: 12px; }
+        .step { display: flex; gap: 16px; align-items: flex-start; }
+        .step-num {
+            width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+            background: var(--primary2); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.78rem; font-weight: 800; margin-top: 1px;
+        }
+        .step-body { flex: 1; }
+        .step-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; }
+        .step-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+        /* ── SHORTCUT TABLE ── */
+        .shortcut-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .shortcut-table th { background: var(--bg3); padding: 8px 14px; text-align: left; color: var(--dim); font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid var(--border); }
+        .shortcut-table td { padding: 10px 14px; border: 1px solid var(--border); vertical-align: middle; }
+        .shortcut-table tr:hover td { background: rgba(51,65,85,0.2); }
+        .kbd {
+            display: inline-block; background: var(--bg3); border: 1px solid var(--border2);
+            border-radius: 5px; padding: 2px 8px; font-size: 0.78rem; font-weight: 700;
+            font-family: ui-monospace, 'SF Mono', monospace; color: var(--text);
+            box-shadow: 0 1px 0 var(--border2);
+        }
+
+        /* ── INLINE BADGE ── */
+        .tag { display: inline-block; background: rgba(56,189,248,0.1); color: var(--primary); border: 1px solid rgba(56,189,248,0.25); padding: 1px 7px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
+        .tag-purple { background: rgba(139,92,246,0.1); color: var(--purple); border-color: rgba(139,92,246,0.3); }
+        .tag-warn   { background: rgba(245,158,11,0.1); color: var(--warn);   border-color: rgba(245,158,11,0.3); }
+        .tag-success{ background: rgba(16,185,129,0.1); color: var(--success);border-color: rgba(16,185,129,0.3); }
+
+        /* ── CALLOUT ── */
+        .callout { border-radius: var(--radius); padding: 14px 18px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.7; border-left: 3px solid; }
+        .callout-info  { background: rgba(56,189,248,0.06);  border-color: var(--primary);  color: var(--muted); }
+        .callout-warn  { background: rgba(245,158,11,0.07);  border-color: var(--warn);     color: var(--muted); }
+        .callout-tip   { background: rgba(16,185,129,0.06);  border-color: var(--success);  color: var(--muted); }
+        .callout strong { color: var(--text); }
+
+        /* ── BUTTON DEMO ── */
+        .btn-demo { display: inline-flex; align-items: center; gap: 5px; border: none; padding: 5px 11px; border-radius: 6px; cursor: default; font-size: 0.78rem; font-weight: 700; font-family: inherit; white-space: nowrap; }
+        .btn-demo.primary { background: var(--primary2); color: #fff; }
+        .btn-demo.success { background: rgba(16,185,129,0.75); color: #fff; }
+        .btn-demo.warn    { background: rgba(245,158,11,0.7); color: #111; }
+        .btn-demo.danger  { background: rgba(239,68,68,0.7); color: #fff; }
+        .btn-demo.ghost   { background: var(--bg3); color: var(--text); border: 1px solid var(--border2); }
+        .btn-demo.ai      { background: linear-gradient(135deg,#8b5cf6,#38bdf8); color: #fff; }
+        .btn-demo.purple  { background: rgba(139,92,246,0.7); color: #fff; }
+
+        /* ── GRID ── */
+        .feature-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        @media (max-width: 700px) { .feature-grid { grid-template-columns: 1fr; } }
+        .feature-card {
+            background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--radius-lg); padding: 16px 18px;
+        }
+        .feature-card-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .feature-card-title { font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; }
+        .feature-card-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+
+        /* ── THEME TOGGLE ── */
+        .theme-toggle-btn {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--bg3); border: 1px solid var(--border2);
+            color: var(--text); padding: 5px 11px 5px 8px;
+            border-radius: 20px; cursor: pointer;
+            font-size: 0.78rem; font-weight: 700; font-family: inherit;
+            transition: background 0.15s; position: fixed; top: 16px; right: 20px; z-index: 100;
+        }
+        .theme-toggle-btn:hover { background: var(--border2); }
+        .tt-track { width: 28px; height: 16px; background: var(--border2); border-radius: 8px; position: relative; transition: background 0.2s; flex-shrink: 0; }
+        .tt-track.on { background: var(--primary2); }
+        .tt-thumb { position: absolute; top: 2px; left: 2px; width: 12px; height: 12px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.25); }
+        .tt-track.on .tt-thumb { transform: translateX(12px); }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+        [data-theme="light"] .shortcut-table tr:hover td { background: #f1f5f9; }
+        [data-theme="light"] .feature-card { background: #fff; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 leading-relaxed tracking-wide">
+<body>
 
-    <header class="bg-[#2c3e50] text-white py-8 shadow-md">
-        <div class="max-w-7xl mx-auto px-6 text-center">
-            <h1 class="text-3xl font-bold flex items-center justify-center gap-4">
-                <img src="channels4_profile.jpg" alt="Logo" class="w-12 h-12 rounded-full bg-white p-0.5 object-contain">
-                <span>バウンティハンターズ CS対応テンプレート管理 マニュアル</span>
-            </h1>
-            <p class="mt-2 text-gray-300">カスタマーサポート業務を効率化するためのテンプレート管理ツールの使い方</p>
+<button class="theme-toggle-btn" onclick="toggleTheme()" id="themeBtn">
+    <span id="themeIcon">🌙</span>
+    <div class="tt-track" id="ttTrack"><div class="tt-thumb"></div></div>
+    <span id="themeLabel">ダーク</span>
+</button>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="brand">Bounty Hunters <span>CS</span></div>
+            <div class="sub">操作マニュアル</div>
         </div>
-    </header>
 
-    <main class="max-w-7xl mx-auto px-6 py-10 flex flex-col lg:flex-row gap-8">
-        
-        <aside class="w-full lg:w-1/4 hidden lg:block">
-            <div class="sticky top-10 bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                <h2 class="text-lg font-bold text-[#2c3e50] mb-4 border-b pb-2">目次</h2>
-                <ul class="space-y-3 text-sm">
-                    <li><a href="#intro" class="text-gray-600 hover:text-[#3498db] transition-colors block">1. はじめに (初期設定)</a></li>
-                    <li><a href="#basic-usage" class="text-gray-600 hover:text-[#3498db] transition-colors block">2. 基本的な使い方</a></li>
-                    <li><a href="#ai-features" class="text-gray-600 hover:text-[#3498db] transition-colors block ml-4 text-blue-600 font-bold">新機能：AIによる業務支援</a></li>
-                    <li><a href="#variable" class="text-gray-600 hover:text-[#3498db] transition-colors block ml-4">便利な機能：変数の展開</a></li>
-                    <li><a href="#manage-template" class="text-gray-600 hover:text-[#3498db] transition-colors block">3. テンプレートの管理</a></li>
-                    <li><a href="#manage-category" class="text-gray-600 hover:text-[#3498db] transition-colors block">4. カテゴリーの管理</a></li>
-                    <li><a href="#utility" class="text-gray-600 hover:text-[#3498db] transition-colors block">5. その他の便利機能</a></li>
+        <a class="sidebar-back" href="index.html">← アプリに戻る</a>
+
+        <div class="nav-section">
+            <div class="nav-section-title">はじめに</div>
+            <a class="nav-link" onclick="scrollTo('overview')"><span class="nav-icon">🏠</span>システム概要</a>
+            <a class="nav-link" onclick="scrollTo('screen')"><span class="nav-icon">🖥️</span>画面の見かた</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">基本操作</div>
+            <a class="nav-link" onclick="scrollTo('copy')"><span class="nav-icon">📋</span>テンプレのコピー</a>
+            <a class="nav-link" onclick="scrollTo('search')"><span class="nav-icon">🔍</span>検索・絞り込み</a>
+            <a class="nav-link" onclick="scrollTo('crud')"><span class="nav-icon">✏️</span>テンプレの追加・編集</a>
+            <a class="nav-link" onclick="scrollTo('fav')"><span class="nav-icon">★</span>お気に入り</a>
+            <a class="nav-link" onclick="scrollTo('history')"><span class="nav-icon">📂</span>コピー履歴</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">AI機能</div>
+            <a class="nav-link" onclick="scrollTo('ai-reply')"><span class="nav-icon">🤖</span>AI返信生成</a>
+            <a class="nav-link" onclick="scrollTo('ai-search')"><span class="nav-icon">✨</span>AIで探す</a>
+            <a class="nav-link" onclick="scrollTo('knowledge')"><span class="nav-icon">💡</span>ナレッジ収集</a>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">管理・設定</div>
+            <a class="nav-link" onclick="scrollTo('spec')"><span class="nav-icon">📋</span>仕様書管理</a>
+            <a class="nav-link" onclick="scrollTo('sync')"><span class="nav-icon">🔄</span>同期・バックアップ</a>
+            <a class="nav-link" onclick="scrollTo('theme')"><span class="nav-icon">🌙</span>テーマ・設定</a>
+            <a class="nav-link" onclick="scrollTo('shortcut')"><span class="nav-icon">⌨️</span>ショートカット</a>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <div class="page-header">
+            <h1>Bounty Hunters <span>CS</span> 操作マニュアル</h1>
+            <p>カスタマーサポートテンプレート管理システムの使いかたガイドです。</p>
+        </div>
+
+        <!-- ===== 概要 ===== -->
+        <section class="section" id="overview">
+            <div class="section-header">
+                <span class="section-icon">🏠</span>
+                <span class="section-title">システム概要</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">📋</div>
+                    <div class="feature-card-title">テンプレート管理</div>
+                    <div class="feature-card-desc">CSの定型文をカテゴリ別に管理。変数埋め込みで柔軟な使い回しが可能です。</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">🤖</div>
+                    <div class="feature-card-title">AI返信生成</div>
+                    <div class="feature-card-desc">お客様からの問い合わせ文をもとに、仕様書を参照しながらAIが返信文を自動生成します。</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">☁️</div>
+                    <div class="feature-card-title">クラウド同期</div>
+                    <div class="feature-card-desc">Google Driveにデータを保存。複数PCから同じデータにアクセスできます。</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-card-icon">💡</div>
+                    <div class="feature-card-title">ナレッジ収集</div>
+                    <div class="feature-card-desc">HelpShiftのチケット履歴をAIが解析し、仕様書への追加候補を自動抽出します。</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 画面 ===== -->
+        <section class="section" id="screen">
+            <div class="section-header">
+                <span class="section-icon">🖥️</span>
+                <span class="section-title">画面の見かた</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔝 ヘッダーエリア</div>
+                <ul>
+                    <li><span class="tag">📋 コピー履歴</span> — 過去50件のコピー履歴をサイドパネルで確認</li>
+                    <li><span class="tag">📂 読込</span> — バックアップJSONファイルを読み込んで復元</li>
+                    <li><span class="tag">💾 バックアップ</span> — 現在のデータをJSONファイルとして保存</li>
+                    <li><span class="tag">🔄 同期</span> — サーバーから最新データを強制取得</li>
+                    <li><span class="tag">📋 仕様書管理</span> — AI返信で参照される仕様書を編集</li>
+                    <li><span class="tag tag-purple">🤖 ナレッジ収集</span> — HelpShiftからナレッジを自動抽出</li>
                 </ul>
             </div>
-        </aside>
 
-        <div class="w-full lg:w-2/4 space-y-12">
+            <div class="card">
+                <div class="card-title">📊 KPIカード</div>
+                <p>ヘッダー下の4枚のカードには以下の集計値が表示されます。</p>
+                <ul style="margin-top:8px;">
+                    <li><b style="color:var(--primary);">テンプレート総数</b> — 登録されている全テンプレートの件数</li>
+                    <li><b style="color:var(--success);">総コピー回数</b> — 全テンプレートの累計コピー数</li>
+                    <li><b style="color:var(--warn);">最多使用テンプレ</b> — コピー回数が最も多いテンプレートの件名</li>
+                    <li><b style="color:var(--purple);">カテゴリ数</b> — カテゴリの総数</li>
+                </ul>
+            </div>
 
-            <section id="intro" class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-[#2c3e50] mb-6 section-title">1. はじめに (初期設定)</h2>
-                <div class="space-y-4 text-gray-700">
-                    <p>このツールは、よく使うお問い合わせへの返信テンプレートをチームで共有・管理するためのシステムです。データは自動的にサーバーと同期されます。</p>
-                    <div class="bg-blue-50 border border-blue-200 p-4 rounded-md">
-                        <h3 class="font-bold text-blue-800 mb-2">👤 名前の設定について</h3>
-                        <p class="text-sm">初めてツールを開いた際、あなたの「名前」を入力するダイアログが表示されます。<br>
-                        ここで設定した名前は、<strong>テンプレートの「最終更新者」として記録</strong>されます。<br>
-                        名前は画面右上の <code class="bg-gray-200 px-1 py-0.5 rounded text-xs">名前を変更</code> ボタンからいつでも変更可能です。</p>
+            <div class="card">
+                <div class="card-title">📡 ステータスバー</div>
+                <ul>
+                    <li><span class="tag tag-success">✅ サーバー同期済み</span> — Driveと正常に同期中</li>
+                    <li><span class="tag tag-warn">📦 キャッシュ表示</span> — オフライン状態。前回のデータを表示中</li>
+                    <li><span class="tag" style="background:rgba(56,189,248,0.1);">🔄 同期中</span> — データ取得中</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== コピー ===== -->
+        <section class="section" id="copy">
+            <div class="section-header">
+                <span class="section-icon">📋</span>
+                <span class="section-title">テンプレートのコピー</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-title">テンプレートを見つける</div>
+                        <div class="step-desc">検索バーにキーワードを入力するか、目次からカテゴリを選んで該当のテンプレートを探します。</div>
                     </div>
                 </div>
-            </section>
-
-            <section id="basic-usage" class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-[#2c3e50] mb-6 section-title">2. 基本的な使い方</h2>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div class="feature-box border border-gray-200 p-5 rounded-lg">
-                        <div class="text-3xl mb-3">🔍</div>
-                        <h3 class="font-bold text-lg mb-2">テンプレートを探す</h3>
-                        <p class="text-sm text-gray-600">検索バーにキーワードを入力します。<strong>スペース区切りで複数の単語（AND検索）</strong>を入力して絞り込むことも可能です。</p>
-                    </div>
-                    <div class="feature-box border border-gray-200 p-5 rounded-lg">
-                        <div class="text-3xl mb-3">📋</div>
-                        <h3 class="font-bold text-lg mb-2">テンプレートをコピーする</h3>
-                        <p class="text-sm text-gray-600">使いたいテンプレートの <code class="bg-[#2ecc71] text-white px-2 py-0.5 rounded text-xs">📋 コピー</code> ボタンを押すだけで、クリップボードに保存されます。</p>
-                    </div>
-                    <div class="feature-box border border-gray-200 p-5 rounded-lg">
-                        <div class="text-3xl mb-3">⭐</div>
-                        <h3 class="font-bold text-lg mb-2">お気に入り機能</h3>
-                        <p class="text-sm text-gray-600">タイトルの横の「★」で登録できます。「★ お気に入り」にチェックを入れると登録したものだけを表示します。</p>
-                    </div>
-                    <div class="feature-box border border-gray-200 p-5 rounded-lg">
-                        <div class="text-3xl mb-3">🔄</div>
-                        <h3 class="font-bold text-lg mb-2">使用回数の確認</h3>
-                        <p class="text-sm text-gray-600">各テンプレートが「何回コピーされたか」が記録されます。頻出テンプレートの把握に役立ちます。</p>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-title"><span class="btn-demo success">📋 コピー</span> ボタンをクリック</div>
+                        <div class="step-desc">テンプレート本文右側の「📋 コピー」ボタンを押します。</div>
                     </div>
                 </div>
-
-                <div id="ai-features" class="bg-purple-50 border-l-4 border-purple-400 p-5 rounded-r-md mb-8">
-                    <h3 class="font-bold text-purple-800 text-lg mb-2">✨ AIによる業務支援機能</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <strong class="text-sm block text-purple-900">1. AIテンプレート検索</strong>
-                            <p class="text-sm text-gray-700">お客様からの問い合わせ内容をそのまま検索窓に貼り付け、<code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">✨ AIで該当テンプレを探す</code> ボタンを押してください。AIが内容を解析し、最適な回答を提案します。</p>
-                        </div>
-                        <div>
-                            <strong class="text-sm block text-purple-900">2. AI自動タグ生成</strong>
-                            <p class="text-sm text-gray-700">編集画面で本文を入力後、<code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">🏷️ AI自動作成</code> ボタンを押すと、AIが本文から適切な検索用タグを自動で抽出・入力します。</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="variable" class="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded-r-md">
-                    <h3 class="font-bold text-yellow-800 text-lg mb-2">💡 超便利！「変数」の自動展開機能</h3>
-                    <p class="text-sm text-gray-700 mb-3">テンプレート内に <code class="bg-white px-1 py-0.5 rounded border border-gray-300">{{お客様名}}</code> のように波括弧2つで囲んだ文字を入れておくと、<strong>コピーボタンを押した際に自動的に入力ポップアップが表示されます。</strong></p>
-                    <ul class="list-disc list-inside text-sm text-gray-700 space-y-1 ml-2">
-                        <li>ポップアップに入力した内容が、テキスト内の該当箇所に自動で置き換わってからコピーされます。</li>
-                        <li>例：<code class="text-gray-500">お世話になっております。{{お客様名}}様。</code> → ポップアップで「山田」と入力 → <code class="text-gray-800 font-bold">お世話になっております。山田様。</code> としてコピー完了！</li>
-                        <li>同じ変数名が複数箇所ある場合、1回の入力ですべて一括で置き換わります。</li>
-                    </ul>
-                </div>
-            </section>
-
-            <section id="manage-template" class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-[#2c3e50] mb-6 section-title">3. テンプレートの管理</h2>
-                
-                <div class="space-y-6">
-                    <div>
-                        <h3 class="font-bold text-lg border-b pb-2 mb-3 flex items-center gap-2">
-                            <span class="text-xl">✏️</span> テンプレートの編集
-                        </h3>
-                        <p class="text-gray-700 text-sm leading-relaxed mb-2">
-                            各テンプレートの <code class="bg-[#f1c40f] text-gray-800 px-2 py-0.5 rounded text-xs">✏️ 編集</code> ボタンを押すと、編集モードに切り替わります。
-                        </p>
-                        <ul class="list-disc list-inside text-sm text-gray-600 space-y-1 ml-2">
-                            <li><strong>件名：</strong> テンプレートのタイトルです。</li>
-                            <li><strong>タグ：</strong> カンマ（,）区切りで入力します。AI自動生成ボタンで作成も可能です。</li>
-                            <li><strong>本文：</strong> 実際のテキストです。<code class="bg-gray-100 px-1 py-0.5 rounded text-xs">{{変数}}</code> もここで設定します。</li>
-                        </ul>
-                        <p class="text-gray-700 text-sm mt-2">編集後、<code class="bg-[#3498db] text-white px-2 py-0.5 rounded text-xs">💾 保存</code> を押すとサーバーに即座に同期されます。</p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-bold text-lg border-b pb-2 mb-3 flex items-center gap-2">
-                            <span class="text-xl">↕️</span> 項目の並び替え
-                        </h3>
-                        <p class="text-gray-700 text-sm leading-relaxed">
-                            各テンプレートの<strong>左側にある件名部分（グレーの背景部分）</strong>をドラッグ＆ドロップすることで、カテゴリー内での表示順を自由に変更できます。
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3 class="font-bold text-lg border-b pb-2 mb-3 flex items-center gap-2">
-                            <span class="text-xl">➕</span> テンプレートの追加 / 削除
-                        </h3>
-                        <p class="text-gray-700 text-sm">
-                            カテゴリー下部の <code class="bg-[#8e44ad] text-white px-2 py-0.5 rounded text-xs">➕ 項目追加</code> ボタンで新規作成、<code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">🗑️ 削除</code> ボタンで消去できます。
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <section id="manage-category" class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-[#2c3e50] mb-6 section-title">4. カテゴリーの管理</h2>
-                
-                <div class="space-y-4 text-gray-700 text-sm">
-                    <p>テンプレートは「カテゴリー」ごとに分類して管理します。</p>
-                    
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                        <div class="bg-gray-50 p-4 border rounded">
-                            <strong class="block text-[#2c3e50] mb-1">カテゴリーの追加</strong>
-                            <p class="text-gray-600">画面最下部の <code class="bg-[#2c3e50] text-white px-2 py-0.5 rounded text-xs">📂 新しいカテゴリーを追加する</code> ボタンをクリックします。</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 border rounded">
-                            <strong class="block text-[#2c3e50] mb-1">カテゴリー名の変更</strong>
-                            <p class="text-gray-600">カテゴリー名の右側にある <code class="bg-[#f1c40f] text-gray-800 px-2 py-0.5 rounded text-xs">名前変更</code> ボタンから変更できます。</p>
-                        </div>
-                        <div class="bg-gray-50 p-4 border rounded">
-                            <strong class="block text-[#2c3e50] mb-1 text-blue-600">カテゴリーの並び替え</strong>
-                            <p class="text-gray-600">画面上部にある<strong>「目次」の各項目</strong>をドラッグ＆ドロップすることで、カテゴリー自体の表示順を変更できます。</p>
-                        </div>
-                        <div class="bg-red-50 p-4 border border-red-100 rounded">
-                            <strong class="block text-red-600 mb-1">⚠️ カテゴリーの削除</strong>
-                            <p class="text-gray-600"><code class="bg-[#e74c3c] text-white px-2 py-0.5 rounded text-xs">カテゴリ削除</code> ボタンを押すと、<strong>中身ごとすべて削除されます。</strong>ご注意ください。</p>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-title">変数を入力する（変数がある場合）</div>
+                        <div class="step-desc">
+                            本文中に <code style="background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:0.85em;">{{変数名}}</code> が含まれている場合、ダイアログが表示されます。<br>
+                            入力値を確定すると変数が置き換わったテキストがクリップボードにコピーされます。<br>
+                            <span style="color:var(--dim); font-size:0.82rem;">日付を英語形式（例: 25 Mar 2025 14:30）で入力すると自動で日本語形式（2025/03/25 14:30）に変換されます。</span>
                         </div>
                     </div>
-
-                    <div class="bg-gray-100 p-4 rounded mt-4">
-                        <h4 class="font-bold text-gray-800 mb-1">💡 並び替えができないときは？</h4>
-                        <p class="text-xs text-gray-600 italic">
-                            「キーワード検索中」や「お気に入り絞り込み中」は、データの整合性を守るため並び替えが無効になります。順番を変えたい場合は、検索バーを空にしてください。
-                        </p>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-title">HelpShiftなどに貼り付ける</div>
+                        <div class="step-desc">クリップボードにコピーされているので、返信欄に <kbd class="kbd">Ctrl</kbd>+<kbd class="kbd">V</kbd> で貼り付けます。コピーのたびに使用回数がカウントされます。</div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <section id="utility" class="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
-                <h2 class="text-2xl font-bold text-[#2c3e50] mb-6 section-title">5. その他の便利機能</h2>
-                
-                <div class="space-y-5 text-gray-700">
-                    <p class="text-sm">画面右上のボタン群の機能説明です。</p>
-                    
-                    <div class="flex items-start gap-3">
-                        <div class="bg-[#3498db] text-white px-3 py-1 rounded text-sm whitespace-nowrap">🔄 同期</div>
-                        <p class="text-sm">他者が更新した最新データをサーバーから強制的に読み込みます。データが競合した（同時に編集した）場合は警告が表示されます。</p>
+            <div class="callout callout-tip" style="margin-top:20px;">
+                <strong>💡 ヒント：</strong> コピーするたびに使用回数が記録されます。よく使うテンプレートはKPIカードの「最多使用テンプレ」に表示されます。
+            </div>
+        </section>
+
+        <!-- ===== 検索 ===== -->
+        <section class="section" id="search">
+            <div class="section-header">
+                <span class="section-icon">🔍</span>
+                <span class="section-title">検索・絞り込み</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔍 キーワード検索</div>
+                <p>検索バーに入力すると、件名・本文・タグを対象にリアルタイムで絞り込みます。スペース区切りでAND検索が可能です。</p>
+                <p style="margin-top:6px;">マッチした部分は青くハイライト表示されます。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title"><span class="btn-demo ai">✨ AIで探す</span></div>
+                <p>問い合わせ文を検索バーに貼り付けて「✨ AIで探す」を押すと、AIが文章の意図を解釈して最適なテンプレートを推薦します。</p>
+                <div class="callout callout-info" style="margin-top:10px;">
+                    <strong>利用シーン：</strong> キーワードでは見つかりにくい長文の問い合わせや、表現が異なる問い合わせを探すときに有効です。
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">★ お気に入りフィルター</div>
+                <p>「★ お気に入り」チェックボックスをオンにすると、お気に入り登録済みのテンプレートだけを表示します。</p>
+            </div>
+        </section>
+
+        <!-- ===== CRUD ===== -->
+        <section class="section" id="crud">
+            <div class="section-header">
+                <span class="section-icon">✏️</span>
+                <span class="section-title">テンプレートの追加・編集・削除</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">➕ 新しいテンプレートを追加する</div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <div class="step-title">追加先カテゴリの下部にある <span class="btn-demo purple">➕ 項目追加</span> をクリック</div>
+                            <div class="step-desc">新しい空の行が編集モードで追加されます。</div>
+                        </div>
                     </div>
-
-                    <div class="flex items-start gap-3">
-                        <div class="bg-[#95a5a6] text-white px-3 py-1 rounded text-sm whitespace-nowrap">💾 バックアップ</div>
-                        <p class="text-sm">現在の全テンプレートデータを「backup.json」としてPCに保存します。定期的なバックアップを推奨します。</p>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <div class="step-title">件名・タグ・本文・メモを入力</div>
+                            <div class="step-desc">タグはカンマ区切りで複数入力できます（例: <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:0.83em;">返金,iOS</code>）。<br>本文で変数を使う場合は <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:0.83em;">{{変数名}}</code> の形式で記述します。</div>
+                        </div>
                     </div>
-
-                    <div class="flex items-start gap-3">
-                        <div class="bg-[#95a5a6] text-white px-3 py-1 rounded text-sm whitespace-nowrap">📂 読込</div>
-                        <p class="text-sm">バックアップした「.json」ファイルを読み込みます。<strong>※読み込んだデータでサーバー上のデータが完全に上書きされます。</strong></p>
-                    </div>
-
-                    <div class="mt-8 border-t pt-6">
-                        <h3 class="font-bold text-lg mb-3 flex items-center gap-2 text-[#2c3e50]">
-                            <span class="text-xl">⬆️</span> トップへ戻るボタン
-                        </h3>
-                        <p class="text-sm leading-relaxed">
-                            画面を下にスクロールすると右下に表示される<strong>上向き矢印ボタン</strong>をクリックすると、ページ最上部までスムーズに戻ります。
-                        </p>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <div class="step-title"><span class="btn-demo primary">💾 保存</span> をクリック</div>
+                            <div class="step-desc">保存と同時にサーバーへの同期が開始されます。</div>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-        </div>
+            <div class="card">
+                <div class="card-title">✏️ 既存テンプレートを編集する</div>
+                <p>テンプレート行の <span class="btn-demo warn">✏️ 編集</span> ボタンをクリックすると編集モードになります。編集後に <span class="btn-demo primary">💾 保存</span> を押して確定します。</p>
+                <div class="callout callout-tip" style="margin-top:10px;">
+                    <strong>🏷️ AIタグ自動生成：</strong> 本文を入力した後にタグ欄の <span class="btn-demo purple">🏷️ AI</span> を押すと、本文の内容からタグをAIが自動生成します。
+                </div>
+            </div>
 
-        <div class="w-full lg:w-1/4 hidden lg:block"></div>
+            <div class="card">
+                <div class="card-title">💬 メモを追加する</div>
+                <p><span class="btn-demo ghost">💬 メモ</span> ボタンからテンプレートに注意書きやヒントを追加できます。メモはテンプレート本文の下に黄色で表示されます（コピー時には含まれません）。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🗑️ テンプレートを削除する</div>
+                <p><span class="btn-demo danger">🗑️</span> ボタンをクリックすると確認ダイアログが表示されます。「削除」を押すと削除され、即座にサーバーへ同期されます。</p>
+                <div class="callout callout-warn" style="margin-top:10px;">
+                    <strong>⚠️ 注意：</strong> 削除したテンプレートは元に戻せません。誤って削除した場合はバックアップJSONから復元してください。
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📂 カテゴリの操作</div>
+                <ul>
+                    <li>カテゴリヘッダーの <span class="btn-demo ghost">✏️ 名前変更</span> でカテゴリ名を変更できます。</li>
+                    <li>カテゴリの <span class="btn-demo danger">🗑️ 削除</span> を押すと、中のテンプレートごと削除されます。</li>
+                    <li>目次（TOC）のカテゴリ名をドラッグすると表示順を並び替えられます。</li>
+                    <li>テンプレート行の件名列（左側）をドラッグすると、カテゴリ内での順序を変更できます。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== お気に入り ===== -->
+        <section class="section" id="fav">
+            <div class="section-header">
+                <span class="section-icon">★</span>
+                <span class="section-title">お気に入り</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+            <div class="card">
+                <p>テンプレートの件名欄右上の <b style="color:#fbbf24;">★</b> ボタンをクリックするとお気に入りに登録されます。登録済みは金色で表示されます。お気に入りはブラウザのローカルに保存されるため、PCごとに設定されます。</p>
+            </div>
+        </section>
+
+        <!-- ===== 履歴 ===== -->
+        <section class="section" id="history">
+            <div class="section-header">
+                <span class="section-icon">📂</span>
+                <span class="section-title">コピー履歴</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+            <div class="card">
+                <p>ヘッダーの <span class="tag">📋 コピー履歴</span> ボタンを押すと、右側にスライドパネルが開きます。過去50件のコピー履歴が新しい順に表示されます。</p>
+                <ul style="margin-top:10px;">
+                    <li>履歴のアイテムをクリックすると、そのテキストを再度クリップボードにコピーします。</li>
+                    <li>AI生成返信をコピーした場合も「AI生成返信」として記録されます。</li>
+                    <li>「全削除」ボタンで履歴をすべて消去できます。</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== AI返信 ===== -->
+        <section class="section" id="ai-reply">
+            <div class="section-header">
+                <span class="section-icon">🤖</span>
+                <span class="section-title">AI返信生成</span>
+                <span class="section-badge badge-ai">AI機能</span>
+            </div>
+
+            <div class="callout callout-info">
+                <strong>概要：</strong> お客様からの問い合わせ文をAIが解析し、仕様書を参照しながら返信文を自動生成します。生成された文章は必ず内容を確認してから使用してください。
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-title">ヘッダーの <span class="btn-demo ai">🤖 AI返信生成</span> をクリック</div>
+                        <div class="step-desc">AI返信生成モーダルが開きます。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-title">問い合わせ文を貼り付ける</div>
+                        <div class="step-desc">HelpShiftなどで受け取ったお客様からのメッセージをそのまま貼り付けます。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-title"><span class="btn-demo ai">🤖 返信を生成する</span> をクリック</div>
+                        <div class="step-desc">AIが3つのステップ（問い合わせ解析 → 仕様書参照 → 返信文生成）を実行します。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-title">内容を確認して <span class="btn-demo success">📋 コピー</span></div>
+                        <div class="step-desc">生成された返信文を確認します。問題なければコピーして返信欄に貼り付けます。<br>再入力が必要な場合は「↩ 再入力」で問い合わせ入力画面に戻ります。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top:20px;">
+                <div class="card-title">💾 テンプレとして保存</div>
+                <p>「💾 テンプレとして保存」を押すと、生成した返信文をテンプレートとして登録できます。件名を入力し、保存先のカテゴリをクリックで選ぶだけで保存されます。</p>
+            </div>
+
+            <div class="callout callout-warn" style="margin-top:16px;">
+                <strong>⚠️ ご注意：</strong> AI生成の返信文は必ず内容を確認してから使用してください。仕様書の情報が古い場合、誤った情報が含まれることがあります。
+            </div>
+        </section>
+
+        <!-- ===== AI検索 ===== -->
+        <section class="section" id="ai-search">
+            <div class="section-header">
+                <span class="section-icon">✨</span>
+                <span class="section-title">AIで探す</span>
+                <span class="section-badge badge-ai">AI機能</span>
+            </div>
+            <div class="card">
+                <p>検索バーに問い合わせ文を貼り付けて <span class="btn-demo ai">✨ AIで探す</span> を押すと、AIが文章の内容を解釈して最も適切なテンプレートを1件推薦します。</p>
+                <p style="margin-top:8px;">推薦結果は検索バーに自動入力され、そのテンプレートが画面に表示されます。</p>
+            </div>
+        </section>
+
+        <!-- ===== ナレッジ収集 ===== -->
+        <section class="section" id="knowledge">
+            <div class="section-header">
+                <span class="section-icon">💡</span>
+                <span class="section-title">ナレッジ収集</span>
+                <span class="section-badge badge-ai">AI機能</span>
+            </div>
+
+            <div class="callout callout-info">
+                <strong>概要：</strong> HelpShiftの解決済みチケットをAIが解析し、仕様書に追加すべき知識を自動抽出します。担当者が確認・選択してから追加するため、品質を保ちながらナレッジを蓄積できます。
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <div class="step-body">
+                        <div class="step-title">ヘッダーの <span class="btn-demo ai">🤖 ナレッジ収集</span> をクリック</div>
+                        <div class="step-desc">ナレッジ自動収集モーダルが開きます。仕様書モーダルの「🤖 ナレッジ収集」ボタンからも開けます。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <div class="step-body">
+                        <div class="step-title">収集期間を選択して <span class="btn-demo ai">🔍 収集開始</span></div>
+                        <div class="step-desc">7日・14日・30日から選択します。期間内の解決済みチケットが対象になります。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <div class="step-body">
+                        <div class="step-title">抽出結果を確認・選択する</div>
+                        <div class="step-desc">AIが抽出したナレッジ候補が一覧表示されます。追加したい項目にチェックを入れます（デフォルトは全選択）。既に仕様書に類似の項目がある場合は自動で除外されます。</div>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-num">4</div>
+                    <div class="step-body">
+                        <div class="step-title"><span class="btn-demo primary">✅ 選択した項目を仕様書に追加</span></div>
+                        <div class="step-desc">選択した項目が仕様書に追加され、Driveに自動保存されます。</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-warn" style="margin-top:16px;">
+                <strong>⚠️ 事前準備：</strong> HelpShiftのAPIキーとドメインをGASの設定（<code style="font-size:0.85em;">HELPSHIFT_DOMAIN</code>、<code style="font-size:0.85em;">HELPSHIFT_API_KEY</code>）に入力する必要があります。設定されていない場合はエラーが表示されます。
+            </div>
+        </section>
+
+        <!-- ===== 仕様書 ===== -->
+        <section class="section" id="spec">
+            <div class="section-header">
+                <span class="section-icon">📋</span>
+                <span class="section-title">仕様書管理</span>
+                <span class="section-badge badge-admin">管理</span>
+            </div>
+
+            <div class="callout callout-info">
+                <strong>概要：</strong> 仕様書はAI返信生成の際に参照されるゲーム仕様・対応方針の一覧です。内容が充実しているほど、より正確な返信文が生成されます。
+            </div>
+
+            <div class="card">
+                <div class="card-title">仕様書の編集手順</div>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-num">1</div>
+                        <div class="step-body">
+                            <div class="step-title">ヘッダーの <span class="btn-demo ghost">📋 仕様書管理</span> をクリック</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">2</div>
+                        <div class="step-body">
+                            <div class="step-title">テーブルを直接編集する</div>
+                            <div class="step-desc">「項目名」「内容・状況」「備考」の各セルをクリックして直接入力できます。</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-num">3</div>
+                        <div class="step-body">
+                            <div class="step-title"><span class="btn-demo primary">☁️ Driveに保存</span> をクリック</div>
+                            <div class="step-desc">保存しないと変更は反映されません。必ず最後に保存してください。</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">仕様書の項目構成</div>
+                <ul>
+                    <li><b>項目名</b> — 仕様・ルールの名称（例: ログイン不具合、返金ポリシー）</li>
+                    <li><b>内容・状況</b> — 対応方法・現在の状況など、AIに参照させる本文</li>
+                    <li><b>備考</b> — 担当者向けのメモ（AIには渡されません）</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== 同期 ===== -->
+        <section class="section" id="sync">
+            <div class="section-header">
+                <span class="section-icon">🔄</span>
+                <span class="section-title">同期・バックアップ</span>
+                <span class="section-badge badge-admin">管理</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">☁️ 自動同期</div>
+                <p>テンプレートの追加・編集・削除を行うと、2秒後に自動でGoogle Driveに保存されます。ページを開いたときも自動的に最新データを取得します。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔄 強制同期</div>
+                <p>ヘッダーの <span class="btn-demo primary">🔄 同期</span> を押すと、サーバーから最新データを強制的に取得します。他のPCで変更を加えた後など、手動で最新化したい場合に使います。</p>
+                <div class="callout callout-warn" style="margin-top:10px;">
+                    <strong>⚠️ 注意：</strong> 編集中の内容がある場合、同期を行うと未保存の変更が失われます。確認ダイアログが表示されます。
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💾 バックアップ・復元</div>
+                <ul>
+                    <li><span class="tag">💾 バックアップ</span> — 現在のテンプレートデータを <code style="background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:0.85em;">backup_YYYYMMDD.json</code> でダウンロードします。</li>
+                    <li><span class="tag">📂 読込</span> — バックアップJSONファイルを選択すると、データが復元されます。読み込み後は自動でサーバーに保存されます。</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🔍 GAS接続診断</div>
+                <p>ステータスバーの <span class="tag">🔍 診断</span> ボタンを押すと、GASサーバーとの通信状態を詳細にチェックします。接続できない場合は診断結果に原因と対処法が表示されます。</p>
+            </div>
+        </section>
+
+        <!-- ===== テーマ ===== -->
+        <section class="section" id="theme">
+            <div class="section-header">
+                <span class="section-icon">🌙</span>
+                <span class="section-title">テーマ・ユーザー設定</span>
+                <span class="section-badge badge-admin">設定</span>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🌙 / ☀️ ダーク・ライトテーマ</div>
+                <p>ヘッダー左上のトグルボタンでダークモード／ライトモードを切り替えられます。設定はブラウザに保存され、次回以降も維持されます。</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">👤 ユーザー名の設定</div>
+                <p>ステータスバーの「変更」ボタンからユーザー名を設定できます。設定した名前はテンプレートの編集履歴（最終更新者）として記録されます。初回起動時に設定ダイアログが自動で表示されます。</p>
+            </div>
+        </section>
+
+        <!-- ===== ショートカット ===== -->
+        <section class="section" id="shortcut">
+            <div class="section-header">
+                <span class="section-icon">⌨️</span>
+                <span class="section-title">キーボードショートカット</span>
+                <span class="section-badge badge-basic">基本</span>
+            </div>
+
+            <table class="shortcut-table">
+                <thead>
+                    <tr>
+                        <th>操作</th>
+                        <th>ショートカット</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>検索バーにフォーカス</td>
+                        <td><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">/</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>モーダルを閉じる</td>
+                        <td><kbd class="kbd">Esc</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>入力モーダルで確定</td>
+                        <td><kbd class="kbd">Enter</kbd></td>
+                    </tr>
+                    <tr>
+                        <td>テキストを貼り付け</td>
+                        <td><kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">V</kbd></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
 
     </main>
+</div>
 
-    <footer class="bg-gray-800 text-gray-400 py-6 text-center text-sm mt-10">
-        <p>&copy; Bounty Hunters CS Team. All rights reserved.</p>
-    </footer>
+<script>
+    const THEME_KEY = 'bh_cs_theme';
 
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        const isLight = theme === 'light';
+        document.getElementById('ttTrack').classList.toggle('on', isLight);
+        document.getElementById('themeIcon').textContent  = isLight ? '☀️' : '🌙';
+        document.getElementById('themeLabel').textContent = isLight ? 'ライト' : 'ダーク';
+        localStorage.setItem(THEME_KEY, theme);
+    }
+    function toggleTheme() {
+        const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+        applyTheme(cur === 'dark' ? 'light' : 'dark');
+    }
+
+    // テーマ復元
+    (function() {
+        const saved = localStorage.getItem(THEME_KEY) || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+    })();
+
+    window.onload = function() {
+        applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+        // サイドバーアクティブ状態
+        const links = document.querySelectorAll('.nav-link');
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) {
+                    links.forEach(l => l.classList.remove('active'));
+                    const active = document.querySelector(`.nav-link[onclick="scrollTo('${e.target.id}')"]`);
+                    if (active) active.classList.add('active');
+                }
+            });
+        }, { threshold: 0.4 });
+        document.querySelectorAll('section.section').forEach(s => observer.observe(s));
+    };
+
+    function scrollTo(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+</script>
 </body>
 </html>
